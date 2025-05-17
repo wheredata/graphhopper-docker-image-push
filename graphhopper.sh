@@ -55,12 +55,12 @@ done
 # Defaults
 : "${ACTION:=server}"
 : "${GRAPH:=/data/default-gh}"
-: "${CONFIG:=config-example.yml}"
-: "${JAVA_OPTS:=-Xmx1g -Xms1g}"
+: "${CONFIG:=config.yml}"
+: "${JAVA_OPTS:=-Xmx4g -Xms8g}"
 : "${JAR:=$(find . -type f -name "*.jar")}"
 
 if [ "$URL" != "" ]; then
-  wget -S -nv -O "${FILE:=data.pbf}" "$URL"
+  wget -S -nv -O "${FILE:=great-britain-latest.pbf}" "$URL"
 fi
 
 # create the directories if needed

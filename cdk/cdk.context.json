@@ -1,0 +1,86 @@
+{
+  "vpc-provider:account=863518450292:filter.tag:Name=wheredata-vpc-prod:region=eu-west-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-027511c045bd3195f",
+    "vpcCidrBlock": "10.0.0.0/16",
+    "ownerAccountId": "863518450292",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "public-subnet-a",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0d5878dffc0f9fa1c",
+            "cidr": "10.0.3.0/24",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-0e81c31b1d1d9919b"
+          },
+          {
+            "subnetId": "subnet-0b7f27488792a552d",
+            "cidr": "10.0.4.0/24",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-09804db9511d60984"
+          },
+          {
+            "subnetId": "subnet-0725822a7e04a640c",
+            "cidr": "10.0.5.0/24",
+            "availabilityZone": "eu-west-2c",
+            "routeTableId": "rtb-04d1cefec8ce23820"
+          }
+        ]
+      },
+      {
+        "name": "isolated-subnet-a",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-0904046369c2e888b",
+            "cidr": "10.0.6.0/28",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-0e31d10a357f33530"
+          },
+          {
+            "subnetId": "subnet-0864d4d1e409921ea",
+            "cidr": "10.0.6.16/28",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-01cbe47fe896a784f"
+          },
+          {
+            "subnetId": "subnet-07a2402335521e209",
+            "cidr": "10.0.6.32/28",
+            "availabilityZone": "eu-west-2c",
+            "routeTableId": "rtb-0b086f62acf89c470"
+          }
+        ]
+      },
+      {
+        "name": "private-subnet-a",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0bac36ecac5722e16",
+            "cidr": "10.0.0.0/24",
+            "availabilityZone": "eu-west-2a",
+            "routeTableId": "rtb-0ccd2307bdf13423d"
+          },
+          {
+            "subnetId": "subnet-0c4d5412e890d0af8",
+            "cidr": "10.0.1.0/24",
+            "availabilityZone": "eu-west-2b",
+            "routeTableId": "rtb-0fd34b5c4791789f4"
+          },
+          {
+            "subnetId": "subnet-0fe4b20a94167efdd",
+            "cidr": "10.0.2.0/24",
+            "availabilityZone": "eu-west-2c",
+            "routeTableId": "rtb-0393a7e58d68926db"
+          }
+        ]
+      }
+    ]
+  },
+  "hosted-zone:account=863518450292:domainName=wheredata.co:region=eu-west-2": {
+    "Id": "/hostedzone/Z096166326PO4I0GQWGRE",
+    "Name": "wheredata.co."
+  }
+}
