@@ -38,8 +38,19 @@ const customPolicy = new iam.Policy(this, 'GraphhopperCustomPolicy', {
             actions: [
                 "logs:CreateLogStream",
                 "logs:PutLogEvents",
-              ],
+            ],
             resources: ["*"]
+        }),
+        new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "s3:GetObject",
+                "s3:ListBucket"
+            ],
+            resources: [
+                "arn:aws:s3:::example.wheredata.co",
+                "arn:aws:s3:::example.wheredata.co/*"
+            ]
         })
     ]
 });

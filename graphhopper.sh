@@ -1,4 +1,22 @@
 #!/bin/bash
+
+# Check if PBF file exists locally
+if [ ! -f "/graphhopper/$PBF_FILE" ]; then
+    echo "PBF file not found locally. Downloading from S3..."
+    
+    # Download from S3
+    aws s3 cp "s3://$S3_BUCKET/$S3_KEY" "/graphhopper/$PBF_FILE"
+    
+    if [ $? -eq 0 ]; then
+        echo "Successfully downloaded PBF file from S3"
+    else
+        echo "Failed to download PBF file from S3"
+        exit 1
+    fi
+else
+    echo "PBF file found locally"
+fi
+
 (set -o igncr) 2>/dev/null && set -o igncr; # this comment is required for handling Windows cr/lf
 # See StackOverflow answer http://stackoverflow.com/a/14607651
 

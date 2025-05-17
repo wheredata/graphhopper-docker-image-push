@@ -16,7 +16,17 @@ WORKDIR /graphhopper
 
 COPY --from=build /graphhopper/web/target/graphhopper*.jar ./
 
-COPY great-britain-latest.pbf graphhopper.sh config.yml ./
+COPY graphhopper.sh config.yml ./
+
+# Install AWS CLI
+RUN apt-get update && apt-get install -y \
+    awscli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PBF_FILE=great-britain-latest.pbf
+ENV S3_BUCKET=example.wheredata.co
+ENV S3_KEY=great-britain-latest.osm.pbf
 
 # Enable connections from outside of the container
 RUN sed -i '/^ *bind_host/s/^ */&# /p' config.yml
@@ -28,3 +38,4 @@ EXPOSE 8989 8990
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
 
 ENTRYPOINT [ "./graphhopper.sh", "-c", "config.yml" ]
+
