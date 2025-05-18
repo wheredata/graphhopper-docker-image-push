@@ -94,11 +94,16 @@ const cluster = new Cluster(this, 'GraphhopperCluster', {
   vpc,
 });
 
-// Create ECR repository if it doesn't exist
-const repository = new ecr.Repository(this, 'GraphhopperRepository', {
-  repositoryName: 'graphhopper',
-  removalPolicy: cdk.RemovalPolicy.RETAIN
-});
+// Check if ECR repository exists, if not create it
+let repository: ecr.IRepository;
+try {
+  repository = ecr.Repository.fromRepositoryName(this, 'GraphhopperRepository', 'graphhopper');
+} catch (error) {
+  repository = new ecr.Repository(this, 'GraphhopperRepository', {
+    repositoryName: 'graphhopper',
+    removalPolicy: cdk.RemovalPolicy.RETAIN
+  });
+}
 
 // ECS Task Definition for Apache Graphhopper
 const taskDefinition = new FargateTaskDefinition(this, 'GraphhopperTaskDef', {
@@ -140,7 +145,7 @@ taskDefinition.addContainer('GraphhopperContainer', {
    },
   entryPoint: ['sh', '-c'],
   command: [
-    "/graphhopper/graphhopper.sh && tail -f /dev/null"
+    "/graphhopper/graphhopper.sh"
   ],
   ulimits: [
     {
