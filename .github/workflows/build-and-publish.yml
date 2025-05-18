@@ -40,5 +40,5 @@ jobs:
           ECR_REPOSITORY: graphhopper
           IMAGE_TAG: latest
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          chmod +x ./build.sh
+          ./build.sh --push "$ECR_REGISTRY" "$ECR_REPOSITORY" "$IMAGE_TAG"

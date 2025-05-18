@@ -2,36 +2,39 @@
 
 usage() (
 cat <<USAGE
-Build a docker image for GraphHopper and optionally push it to Docker Hub
+Build a docker image for GraphHopper and optionally push it to ECR
 
 Usage:
-  ./build.sh [[--push] <tag>]
+  ./build.sh [[--push] <registry> <repository> <tag>]
   ./build.sh --help
 
-Argument:
-  <tag>         Build an image for the given graphhopper repository tag [default: master]
+Arguments:
+  <registry>    ECR registry URL (e.g., 123456789012.dkr.ecr.region.amazonaws.com)
+  <repository>  ECR repository name
+  <tag>         Image tag [default: latest]
 
 Option:
-  --push        Push the image to Docker Hub
+  --push        Push the image to ECR
   --help        Print this message
-  
-Docker Hub credentials are needed for pushing the image. If they are not provided using the
-DOCKERHUB_USER and DOCKERHUB_TOKEN environment variables, then they will be asked interactively.
 USAGE
 )
 
 if [ "$1" == "--push" ]; then
   push="true"
-  docker login --username "${DOCKERHUB_USER}" --password "${DOCKERHUB_TOKEN}" || exit $?
   shift
 else
   push="false"
 fi
 
-if [ $# -gt 1 ] || [ "$1" == "--help" ]; then
+if [ $# -lt 2 ] || [ "$1" == "--help" ]; then
   usage
-  exit
+  exit 1
 fi
+
+registry="$1"
+repository="$2"
+tag="${3:-latest}"
+imagename="${registry}/${repository}:${tag}"
 
 if [ ! -d graphhopper ]; then
   echo "Cloning graphhopper"
@@ -41,23 +44,16 @@ else
   (cd graphhopper; git checkout master; git pull)
 fi
 
-imagename="israelhikingmap/graphhopper:${1:-latest}"
-if [ "$1" ]; then
-  echo "Checking out graphhopper:$1"
-  (cd graphhopper; git checkout --detach "$1")
-fi
-
 echo "Creating new builder instance for multi-platform (linux/amd64, linux/arm64/v8) builds to use for building Graphhopper"
 docker buildx create --use --name graphhopperbuilder
 
-
 if [ "${push}" == "true" ]; then
-  echo "Building docker image ${imagename} for linux/amd64 and linux/arm64/v8 and pushing to Docker Hub\n"
+  echo "Building docker image ${imagename} for linux/amd64 and linux/arm64/v8 and pushing to ECR"
   docker buildx build --platform linux/amd64,linux/arm64/v8 -t "${imagename}" --push .
 else
-  echo "Building docker image ${imagename} for linux/amd64 and linux/arm64/v8\n"
+  echo "Building docker image ${imagename} for linux/amd64 and linux/arm64/v8"
   docker buildx build --platform linux/amd64,linux/arm64/v8 -t "${imagename}" .
-  echo "Use \"docker push ${imagename}\" to publish the image on Docker Hub"
+  echo "Use \"docker push ${imagename}\" to publish the image on ECR"
 fi
 
 # Remove the builder instance after use
