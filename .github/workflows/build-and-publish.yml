@@ -34,11 +34,20 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: List ECR repositories
+        run: |
+          aws ecr describe-repositories
+
       - name: Build and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: graphhopper
           IMAGE_TAG: latest
         run: |
+          echo "Building and pushing to: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           chmod +x ./build.sh
           ./build.sh --push "$ECR_REGISTRY" "$ECR_REPOSITORY" "$IMAGE_TAG"
+          
+      - name: Verify image exists
+        run: |
+          aws ecr describe-images --repository-name graphhopper
