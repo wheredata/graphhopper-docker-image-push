@@ -94,7 +94,11 @@ const cluster = new Cluster(this, 'GraphhopperCluster', {
   vpc,
 });
 
-const repository = ecr.Repository.fromRepositoryName(this, 'GraphhopperRepository', 'Graphhopper');
+// Create ECR repository if it doesn't exist
+const repository = new ecr.Repository(this, 'GraphhopperRepository', {
+  repositoryName: 'graphhopper',
+  removalPolicy: cdk.RemovalPolicy.RETAIN
+});
 
 // ECS Task Definition for Apache Graphhopper
 const taskDefinition = new FargateTaskDefinition(this, 'GraphhopperTaskDef', {
