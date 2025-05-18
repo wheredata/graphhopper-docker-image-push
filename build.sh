@@ -44,6 +44,28 @@ else
   (cd graphhopper; git checkout master; git pull)
 fi
 
+# Create .m2 directory and copy settings.xml if it doesn't exist
+mkdir -p .m2
+if [ ! -f .m2/settings.xml ]; then
+  echo "Creating Maven settings with mirror configuration"
+  cat > .m2/settings.xml << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <mirrors>
+        <mirror>
+            <id>central-mirror</id>
+            <name>Maven Central Mirror</name>
+            <url>https://maven-central.storage.googleapis.com/maven2/</url>
+            <mirrorOf>central</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>
+EOF
+fi
+
 echo "Creating new builder instance for multi-platform (linux/amd64, linux/arm64/v8) builds to use for building Graphhopper"
 docker buildx create --use --name graphhopperbuilder
 
