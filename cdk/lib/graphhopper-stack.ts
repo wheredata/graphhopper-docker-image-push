@@ -130,8 +130,8 @@ export class GraphhopperStack extends cdk.Stack {
 
     // ECS Task Definition for Apache Graphhopper
     const taskDefinition = new FargateTaskDefinition(this, 'GraphhopperTaskDef', {
-      memoryLimitMiB: 8192,
-      cpu: 2048,
+      memoryLimitMiB: 8192,  // 8GB
+      cpu: 4096,  // 4 vCPU
       taskRole,
       executionRole,
     });
@@ -192,8 +192,8 @@ export class GraphhopperStack extends cdk.Stack {
         command: ["CMD-SHELL", "curl -f http://localhost:8989/health || exit 1"],
         interval: cdk.Duration.seconds(30),
         retries: 3,
-        timeout: cdk.Duration.seconds(5),
-        startPeriod: cdk.Duration.seconds(3),
+        timeout: cdk.Duration.seconds(30),
+        startPeriod: cdk.Duration.seconds(600),
       }
     });
 
