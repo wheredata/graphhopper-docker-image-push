@@ -74,7 +74,7 @@ done
 : "${ACTION:=server}"
 : "${GRAPH:=/data/default-gh}"
 : "${CONFIG:=config.yml}"
-: "${JAVA_OPTS:=-Xmx4g -Xms8g}"
+: "${JAVA_OPTS:=-Xms4g -Xmx8g}"
 : "${JAR:=$(find . -type f -name "*.jar")}"
 
 if [ "$URL" != "" ]; then
