@@ -23,6 +23,10 @@ RUN apt-get update && apt-get install -y \
     awscli \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy start script
+COPY start.sh /graphhopper/
+RUN chmod +x /graphhopper/start.sh
+
 # Set environment variables
 ENV PBF_FILE=great-britain-latest.pbf
 ENV S3_BUCKET=example.wheredata.co
@@ -37,5 +41,5 @@ EXPOSE 8989 8990
 
 HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
 
-ENTRYPOINT [ "./graphhopper.sh", "-c", "config.yml" ]
+ENTRYPOINT ["/graphhopper/start.sh"]
 

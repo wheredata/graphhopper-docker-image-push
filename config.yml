@@ -1,9 +1,9 @@
 graphhopper:
 
   # OpenStreetMap input file PBF or XML, can be changed via command line -Ddw.graphhopper.datareader.file=some.pbf
-  datareader.file: ""
+  datareader.file: ${GH_INPUT_FILE}
   # Local folder used by graphhopper to store its data
-  graph.location: graph-cache
+  graph.location: ${GH_DATA_DIR}
 
 
   ##### Routing Profiles ####
