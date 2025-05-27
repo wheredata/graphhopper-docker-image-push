@@ -39,7 +39,8 @@ VOLUME [ "/data" ]
 
 EXPOSE 8989 8990
 
-HEALTHCHECK --interval=5s --timeout=3s CMD curl --fail http://localhost:8989/health || exit 1
+# Increase health check interval and timeout
+HEALTHCHECK --interval=30s --timeout=10s --start-period=600s --retries=3 CMD curl --fail http://localhost:8989/health || exit 1
 
 ENTRYPOINT ["/graphhopper/start.sh"]
 
