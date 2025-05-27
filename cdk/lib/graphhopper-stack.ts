@@ -7,13 +7,12 @@ import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
 import { Construct } from 'constructs';
 import { Vpc, SubnetType, InstanceType, InstanceClass, InstanceSize, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, FargateService, FargateTaskDefinition, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ListenerAction } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { PublicHostedZone, ARecord, RecordTarget } from 'aws-cdk-lib/aws-route53';
-import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 import * as logs from 'aws-cdk-lib/aws-logs';
 
 export class GraphhopperStack extends cdk.Stack {
@@ -48,6 +47,13 @@ export class GraphhopperStack extends cdk.Stack {
     // Create ECS Cluster
     const cluster = new Cluster(this, 'GraphhopperCluster', {
       vpc,
+    });
+
+    // Create Service Discovery namespace
+    const namespace = new servicediscovery.PrivateDnsNamespace(this, 'GraphhopperNamespace', {
+      vpc,
+      name: 'graphhopper.local',
+      description: 'Private DNS namespace for GraphHopper service'
     });
 
     // ECS Task Role - Used by ECS tasks to access AWS resources such as databases, secrets, etc.
@@ -226,14 +232,20 @@ export class GraphhopperStack extends cdk.Stack {
     // Allow EFS access from ECS tasks
     fileSystem.connections.allowFrom(ecsSecurityGroup, Port.tcp(2049));
 
-    // ECS Fargate Service
+    // ECS Fargate Service with Service Discovery
     const service = new FargateService(this, 'GraphhopperService', {
       cluster,
       taskDefinition,
       desiredCount: 1,
       securityGroups: [ecsSecurityGroup],
       minHealthyPercent: 100,
-      maxHealthyPercent: 200
+      maxHealthyPercent: 200,
+      cloudMapOptions: {
+        name: 'graphhopper',
+        cloudMapNamespace: namespace,
+        dnsRecordType: servicediscovery.DnsRecordType.A,
+        dnsTtl: cdk.Duration.seconds(30)
+      }
     });
 
 
@@ -274,16 +286,6 @@ export class GraphhopperStack extends cdk.Stack {
 
     // Allow traffic from ALB to ECS service
     service.connections.allowFrom(loadBalancer, Port.tcp(8989));
-
-    const zone = PublicHostedZone.fromLookup(this, 'HostedZone', {
-      domainName: 'wheredata.co',
-    });
-
-    new ARecord(this, 'GraphhopperAliasRecord', {
-      zone,
-      recordName: 'graphhopper',
-      target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-    });
 
   }
 }
